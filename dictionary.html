@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RosterProof — Data Dictionary</title>
+<meta name="description" content="Every published view and column in the RosterProof exclusions dataset, in plain English.">
+<style>
+body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;background:#0a1128;color:#eef2fb;margin:0}
+.wrap{max-width:960px;margin:0 auto;padding:56px 24px}
+h1{font-size:28px;font-weight:600;margin:0 0 6px}
+h2{font-size:20px;margin:44px 0 6px;color:#7fd4c8}
+h2 small{color:#8fa3c7;font-weight:400;font-size:14px}
+.tag{color:#8fa3c7;font-size:13px;letter-spacing:2px;margin-bottom:28px;text-transform:uppercase}
+p{color:#c7d2ea;line-height:1.7}
+.card{background:#111a36;border:1px solid #2f3b55;border-left:3px solid #7fd4c8;border-radius:14px;padding:18px 24px;margin:18px 0}
+.card p{margin:0}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+th,td{border:1px solid #2f3b55;padding:9px 12px;text-align:left;vertical-align:top;line-height:1.55}
+th{background:#111a36;color:#8fa3c7;font-weight:600}
+td:first-child{white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;color:#7fd4c8}
+td:nth-child(2){white-space:nowrap;color:#8fa3c7;font-size:13px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;color:#7fd4c8}
+a{color:#7fd4c8}
+ul{color:#c7d2ea;line-height:1.7}
+footer{color:#5b6b85;font-size:13px;margin-top:56px}
+.legal{font-size:11px;color:#46536b}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Data Dictionary</h1>
+<div class="tag">rosterproof · published surface (PUBLISHED_V1)</div>
+
+<p>Every column a customer can see, in plain English.</p>
+<div class="card"><p>⏰ <strong>All timestamps in this feed are UTC</strong>, stored as
+<code>TIMESTAMP_NTZ</code> (no timezone suffix — read them as UTC). All dates are calendar
+dates as published by the source.</p></div>
+
+<h2>EXCLUSION_CURRENT <small>— one row per currently-listed exclusion record per source</small></h2>
+<div class="tablewrap"><table>
+<tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
+<tr><td>EXCLUSION_KEY</td><td>VARCHAR(64)</td><td>Stable record identity: SHA-256 over source + identity fields (name, DOB, state) + exclusion date. Stable across runs. <strong>Known caveat:</strong> if a source corrects a typo in an identity field, the key changes, so the correction appears in the change feed as <code>REMOVED</code> (old key) + <code>ADDED</code> (new key) rather than <code>CHANGED</code>. Join key for history and matches.</td></tr>
+<tr><td>SOURCE_ID</td><td>VARCHAR(20)</td><td>Which list: <code>LEIE</code> (federal), <code>TX</code>, <code>CA</code>, <code>NY</code>, <code>OH</code>, <code>GA</code>, <code>NC</code>, <code>AZ</code>, <code>WA</code>, <code>NJ</code>, <code>MD</code>, <code>MN</code>, <code>MO</code>, <code>TN</code>, <code>PA</code>. Only publishable sources appear on this surface; sources whose terms of use block redistribution (currently Michigan) are held back until permission or public-records sourcing clears them.</td></tr>
+<tr><td>ENTITY_TYPE</td><td>VARCHAR(20)</td><td><code>INDIVIDUAL</code> or <code>ENTITY</code> (organization).</td></tr>
+<tr><td>LAST_NAME / FIRST_NAME / MIDDLE_NAME</td><td>VARCHAR</td><td>Person name as published by the source (casing preserved; LEIE is all-caps, Texas mixed-case). Null for organizations.</td></tr>
+<tr><td>BUSINESS_NAME</td><td>VARCHAR(500)</td><td>Organization name as published. Null for individuals.</td></tr>
+<tr><td>DOB</td><td>DATE</td><td>Date of birth when the source publishes it (LEIE and Ohio; other sources do not).</td></tr>
+<tr><td>NPI_SOURCE</td><td>VARCHAR(10)</td><td>NPI as published by the source — often missing. See <code>EXCLUSIONS_SCREENABLE</code> for validated NPIs.</td></tr>
+<tr><td>LICENSE_NUMBER</td><td>VARCHAR(100)</td><td>Professional license number where published (TX, CA, NY, PA, MD, MO; LEIE does not publish one).</td></tr>
+<tr><td>SPECIALTY</td><td>VARCHAR(200)</td><td>Specialty/occupation as published.</td></tr>
+<tr><td>ADDRESS / CITY / STATE / ZIP</td><td>VARCHAR</td><td>Location as published (LEIE full address; Texas state only). <code>STATE</code> is a 2-letter code; unknown states are NULL.</td></tr>
+<tr><td>EXCLUSION_TYPE</td><td>VARCHAR(100)</td><td>The source's own code or status (e.g. LEIE <code>1128b4</code>, PA <code>Precluded</code>). Null when the source publishes none.</td></tr>
+<tr><td>EXCLUSION_TYPE_DESC</td><td>VARCHAR(500)</td><td>Plain-English description of the code; <code>'Not specified by source'</code> when none is published. Never null.</td></tr>
+<tr><td>EXCLUSION_DATE</td><td>DATE</td><td>When the exclusion took effect. Occasionally a few days in the future (OIG forward-dates scheduled exclusions).</td></tr>
+<tr><td>REINSTATEMENT_DATE</td><td>DATE</td><td>Reinstatement date when published. LEIE removes reinstated records from its file, so this is populated only for sources that print end dates (Texas, Pennsylvania, and NJ/AZ scheduled ends).</td></tr>
+<tr><td>EXCLUSION_AUTHORITY</td><td>VARCHAR(200)</td><td>Statute / program cited (e.g. <code>42 USC 1320a-7</code>).</td></tr>
+<tr><td>FIRST_SEEN_AT</td><td>TIMESTAMP_NTZ (UTC)</td><td>When this pipeline first observed the record. Stable across refreshes.</td></tr>
+<tr><td>LAST_SEEN_AT</td><td>TIMESTAMP_NTZ (UTC)</td><td>Most recent refresh that confirmed the record.</td></tr>
+<tr><td>RAW_RECORD_HASH</td><td>VARCHAR(64)</td><td>Content hash used for change detection.</td></tr>
+</table></div>
+
+<h2>EXCLUSION_HISTORY <small>— every version of every record, forever (SCD2)</small></h2>
+<div class="tablewrap"><table>
+<tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
+<tr><td>EXCLUSION_KEY</td><td>VARCHAR(64)</td><td>Joins to <code>EXCLUSION_CURRENT</code>.</td></tr>
+<tr><td>VERSION_NUM</td><td>NUMBER</td><td>1, 2, 3… per key.</td></tr>
+<tr><td>CHANGE_TYPE</td><td>VARCHAR(20)</td><td><code>ADDED</code> / <code>CHANGED</code> / <code>REMOVED</code> / <code>REINSTATED</code>.</td></tr>
+<tr><td>VALID_FROM / VALID_TO</td><td>TIMESTAMP_NTZ (UTC)</td><td>Version validity window; <code>VALID_TO</code> null = still current.</td></tr>
+<tr><td>IS_CURRENT</td><td>BOOLEAN</td><td>Convenience flag for the open version.</td></tr>
+<tr><td>RECORD</td><td>VARIANT</td><td>Full JSON snapshot of the record at this version.</td></tr>
+</table></div>
+
+<h2>CHANGE_FEED <small>— append-only delta stream (poll <code>WHERE OBSERVED_AT &gt; :last_run</code>)</small></h2>
+<div class="tablewrap"><table>
+<tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
+<tr><td>CHANGE_ID</td><td>NUMBER</td><td>Monotonic id.</td></tr>
+<tr><td>OBSERVED_AT</td><td>TIMESTAMP_NTZ (UTC)</td><td>When the pipeline observed the change.</td></tr>
+<tr><td>SOURCE_ID / EXCLUSION_KEY / CHANGE_TYPE</td><td></td><td>As above.</td></tr>
+<tr><td>SUMMARY</td><td>VARCHAR(1000)</td><td>Human-readable one-liner.</td></tr>
+<tr><td>RECORD</td><td>VARIANT</td><td>Record snapshot (or removal note).</td></tr>
+</table></div>
+
+<h2>SOURCE_REGISTRY <small>— one row per covered source list</small></h2>
+<div class="tablewrap"><table>
+<tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
+<tr><td>SOURCE_ID / SOURCE_NAME / JURISDICTION</td><td></td><td>Identity of the list (<code>FEDERAL</code> or state code).</td></tr>
+<tr><td>PUBLISHER / SOURCE_URL / SOURCE_FORMAT / UPDATE_CADENCE</td><td></td><td>Where the data comes from and how often it updates. <code>EMAIL_REQUEST</code> = the source delivers the file by email on request rather than publishing a fetchable URL (e.g. NJ OSC); refreshed each time a new file arrives.</td></tr>
+<tr><td>LAST_CHECKED_AT / LAST_CHANGED_AT</td><td>TIMESTAMP_NTZ (UTC)</td><td>Last fetch vs last time content actually changed.</td></tr>
+<tr><td>ACTIVE_RECORD_COUNT</td><td>NUMBER</td><td>Rows currently in <code>EXCLUSION_CURRENT</code> for this source.</td></tr>
+</table></div>
+
+<h2>EXCLUSIONS_SCREENABLE <small>— the "join your roster against this" view (ALL records, active and ended)</small></h2>
+<p>Contains every exclusion record we have ever observed — currently-active ones <strong>and</strong>
+ended ones (reinstated or no-longer-published) — so historical claim dates can be validated
+against past exclusion windows. Filter <code>IS_ACTIVE = TRUE</code> for present-day screening.</p>
+<div class="tablewrap"><table>
+<tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
+<tr><td>EXCLUSION_KEY / SOURCE_ID / JURISDICTION</td><td></td><td>As above.</td></tr>
+<tr><td>ENTITY_TYPE</td><td>VARCHAR</td><td><code>INDIVIDUAL</code> or <code>ORGANIZATION</code>.</td></tr>
+<tr><td>LAST_NAME / FIRST_NAME</td><td>VARCHAR</td><td>Person name components as published (null for organizations). Compose display names as you prefer.</td></tr>
+<tr><td>BUSINESS_NAME</td><td>VARCHAR</td><td>Organization name as published (null for individuals).</td></tr>
+<tr><td>STATE</td><td>VARCHAR</td><td>2-letter code as published; NULL when unknown.</td></tr>
+<tr><td>EXCLUSION_REASON</td><td>VARCHAR(500)</td><td>Plain-English reason for the exclusion; <code>'Not specified by source'</code> when none published.</td></tr>
+<tr><td>EXCLUSION_START</td><td>DATE</td><td>Start of the exclusion window (the source's exclusion date). <strong>Earliest genuine dates reach back to 1957</strong>: state master lists retain decades-old records. The 11 pre-1970 records (PA 1957–1968, TX 1959) were individually reviewed 2026-07-14 — distinct scattered dates, era-consistent statuses, some with administrative closures decades later — and confirmed as published by the sources, not data artifacts.</td></tr>
+<tr><td>EXCLUSION_END</td><td>DATE</td><td>End of the window; NULL while open-ended. <strong>May be in the future</strong> — some sources (AZ) publish fixed-term exclusions with scheduled end dates.</td></tr>
+<tr><td>EXCLUSION_END_BASIS</td><td>VARCHAR</td><td>How we know it ended: <code>PUBLISHED_BY_SOURCE</code> = the source printed a reinstatement date; <code>REMOVED_BY_SOURCE</code> = the source silently dropped the record — the end date is when our pipeline observed the removal (UTC), <em>not</em> an official reinstatement date. NULL while active.</td></tr>
+<tr><td>IS_ACTIVE</td><td>BOOLEAN</td><td>TRUE while the exclusion is in force: still published AND not past any published end date (a future scheduled end is still active).</td></tr>
+<tr><td>NPI</td><td>VARCHAR(10)</td><td>Best available NPI: NPPES-validated match first, else the source-published NPI.</td></tr>
+<tr><td>NPI_ORIGIN</td><td>VARCHAR</td><td><code>VERIFIED_WITH_NPPES</code> (validated against the national registry) or <code>UNVERIFIED_SOURCE_CLAIM</code> (the source printed an NPI that NPPES could not confirm). Null when no NPI.</td></tr>
+<tr><td>NPI_STATUS</td><td>VARCHAR</td><td>Status of the NPI <em>in the national registry, not of the exclusion</em>: <code>ACTIVE_IN_NPPES</code> (live credential), <code>DEACTIVATED_IN_NPPES</code> (real NPI, since deactivated — common for excluded providers), <code>NOT_FOUND_IN_NPPES</code>.</td></tr>
+<tr><td>MATCH_CONFIDENCE</td><td>VARCHAR</td><td><strong>HIGH</strong> = deterministic (source NPI or exact identity), <strong>MEDIUM</strong> = strong corroborated match (e.g. license+state), <strong>LOW</strong> = needs review.</td></tr>
+<tr><td>MATCH_BASIS</td><td>VARCHAR</td><td>Plain-English statement of HOW the NPI was matched: <code>'NPI published by source, verified'</code>, <code>'Unique name match in national registry'</code>, or <code>'State license number match'</code>. Null when no match.</td></tr>
+<tr><td>MATCH_SCORE</td><td>FLOAT</td><td>0.0–1.0 numeric score behind the label.</td></tr>
+<tr><td>NEEDS_HUMAN_REVIEW</td><td>BOOLEAN</td><td><strong>TRUE = do not auto-act on this record; have a person verify.</strong> Causes: deactivated NPI, unvalidated source-published NPI. TRUE does not mean the data is unverified — it means the correct response requires human judgment (a verified-but-deactivated NPI calls for a historical claims sweep, not an automated block).</td></tr>
+<tr><td>EXCLUDED_IN_MULTIPLE_JURISDICTIONS</td><td>BOOLEAN</td><td>TRUE when this record's NPI-confirmed identity is excluded by 2+ sources (see <code>ENTITY_OVERLAP</code>). Limitation: FALSE can also mean "no NPI resolved to check against".</td></tr>
+</table></div>
+<div class="card"><p><strong>Filter guidance:</strong> screen against <code>IS_ACTIVE = TRUE AND
+MATCH_CONFIDENCE = 'HIGH'</code> for automated blocking; route <code>NEEDS_HUMAN_REVIEW =
+TRUE</code> rows to a human queue. <strong>Join-casing note:</strong> name fields are published
+exactly as each source rendered them (LEIE all-caps, Texas mixed-case, …); normalize case on
+both sides before name-based joins.</p></div>
+
+<h2>ENTITY_OVERLAP <small>— providers excluded in multiple jurisdictions</small></h2>
+<p>One row per NPI that appears in <strong>2 or more sources</strong>. <strong>Limitation (by
+design): NPI-confirmed matches only</strong> — records that could not be resolved to an NPI
+cannot be overlapped, so these counts are a floor, not a census.</p>
+<div class="tablewrap"><table>
+<tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
+<tr><td>NPI</td><td>VARCHAR(10)</td><td>The provider's NPI.</td></tr>
+<tr><td>LAST_NAME / FIRST_NAME</td><td>VARCHAR</td><td>Person name components (representative across sources; null for organizations).</td></tr>
+<tr><td>BUSINESS_NAME</td><td>VARCHAR</td><td>Organization name (null for individuals).</td></tr>
+<tr><td>SOURCE_IDS</td><td>ARRAY</td><td>Which sources list this NPI (e.g. <code>["CA","LEIE","TX"]</code>).</td></tr>
+<tr><td>JURISDICTION_COUNT</td><td>NUMBER</td><td>How many sources list this NPI (2 up to 5 today).</td></tr>
+<tr><td>EARLIEST_EXCLUSION_START</td><td>DATE</td><td>Earliest exclusion window start across sources.</td></tr>
+<tr><td>ACTIVE_ANYWHERE</td><td>BOOLEAN</td><td>TRUE if at least one source lists the exclusion as currently in force.</td></tr>
+<tr><td>NPI_STATUS</td><td>VARCHAR</td><td><code>ACTIVE_IN_NPPES</code> or <code>DEACTIVATED_IN_NPPES</code> — the registry status of the credential itself.</td></tr>
+</table></div>
+
+<h2>FEED_INFO <small>— freshness/trust (check this first)</small></h2>
+<div class="tablewrap"><table>
+<tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
+<tr><td>FEED_VERSION</td><td>VARCHAR</td><td>Feed schema version (<code>1.0</code>).</td></tr>
+<tr><td>FEED_REFRESHED_AT_UTC</td><td>TIMESTAMP_NTZ (UTC)</td><td>Last successful pipeline run, whole feed.</td></tr>
+<tr><td>SOURCE_ID / SOURCE_NAME / JURISDICTION</td><td></td><td>One row per source.</td></tr>
+<tr><td>SOURCE_LAST_CHECKED_AT_UTC / SOURCE_LAST_CHANGED_AT_UTC</td><td>TIMESTAMP_NTZ (UTC)</td><td>Per-source fetch vs content-change times.</td></tr>
+<tr><td>ACTIVE_RECORD_COUNT</td><td>NUMBER</td><td>Per-source current row count.</td></tr>
+<tr><td>NPPES_SNAPSHOT_DATE</td><td>DATE</td><td>NPPES monthly file used for NPI matching.</td></tr>
+</table></div>
+
+<h2>Which object answers which question</h2>
+<ul>
+<li><strong><code>EXCLUSIONS_SCREENABLE</code> = final answers for screening.</strong> One row per exclusion record with the best available NPI, confidence labels, and review flags. This is what you join rosters/claims against.</li>
+<li><strong><code>CHANGE_FEED</code> = what changed since my last poll.</strong></li>
+<li><strong><code>EXCLUSION_HISTORY</code> = full audit trail</strong> of every version of every record.</li>
+<li><strong><code>FEED_INFO</code> = is the feed fresh</strong> and which NPPES snapshot backs the matches.</li>
+</ul>
+
+<footer>
+RosterProof · <a href="/">Home</a> · <a href="attribution.html">Attribution &amp; Notices</a> · <a href="privacy.html">Privacy Policy</a> · <a href="mailto:support@rosterproof.com">support@rosterproof.com</a>
+<br><span class="legal">© 2026 Shoonya — RosterProof is a Shoonya product</span>
+</footer>
+</div>
+</body>
+</html>

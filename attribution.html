@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RosterProof — Data Sources, Attribution &amp; Required Notices</title>
+<meta name="description" content="Per-source attribution, terms, and required notices for the RosterProof exclusions dataset.">
+<style>
+body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;background:#0a1128;color:#eef2fb;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding:56px 24px}
+h1{font-size:28px;font-weight:600;margin:0 0 6px}
+h2{font-size:20px;margin:40px 0 12px;color:#c7d2ea}
+.tag{color:#8fa3c7;font-size:13px;letter-spacing:2px;margin-bottom:36px;text-transform:uppercase}
+p{color:#c7d2ea;line-height:1.7}
+.card{background:#111a36;border:1px solid #2f3b55;border-radius:14px;padding:22px 26px;margin:18px 0}
+.card p{margin:0}
+.notice{border-left:3px solid #7fd4c8}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0}
+th,td{border:1px solid #2f3b55;padding:10px 12px;text-align:left;vertical-align:top;line-height:1.55}
+th{background:#111a36;color:#8fa3c7;font-weight:600;white-space:nowrap}
+td:first-child{white-space:nowrap;font-weight:600;color:#7fd4c8}
+a{color:#7fd4c8}
+footer{color:#5b6b85;font-size:13px;margin-top:56px}
+.legal{font-size:11px;color:#46536b}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Data Sources, Attribution &amp; Required Notices</h1>
+<div class="tag">rosterproof · exclusions data feed</div>
+
+<p>RosterProof aggregates and normalizes publicly published government exclusion lists. The
+data has been <strong>modified from its original form</strong> (normalized into one schema,
+NPI-resolved, history-tracked) and is <strong>not official government data</strong>; the
+authoritative record is always the source agency's own publication. No source agency —
+HHS-OIG or any state — endorses this product. Per-source publication URLs and as-of
+timestamps ship inside the dataset itself (<code>SOURCE_REGISTRY</code>, <code>FEED_INFO</code>).</p>
+
+<h2>Per-source attribution and notices</h2>
+<div class="tablewrap">
+<table>
+<tr><th>Source</th><th>Publishing agency</th><th>Attribution / notice obligations</th></tr>
+<tr><td>LEIE</td><td>U.S. HHS Office of Inspector General</td><td>Public domain. Definitive individual verification requires OIG's SSN-based Online Search — this file alone is not conclusive.</td></tr>
+<tr><td>AZ</td><td>Arizona AHCCCS</td><td>Attribution + accuracy disclaimer.</td></tr>
+<tr><td>CA</td><td>California DHCS (via CalHHS Open Data Portal)</td><td>Credit to DHCS/CalHHS with citation of source page and publication date; data is clearly labeled as modified (see above and <code>SOURCE_REGISTRY</code>). License is revocable by the State.</td></tr>
+<tr><td>GA</td><td>Georgia DCH Office of Inspector General</td><td>Agency accuracy disclaimer passes through.</td></tr>
+<tr><td>MD</td><td>Maryland Department of Health</td><td>Attribution + accuracy disclaimer.</td></tr>
+<tr><td>MN</td><td>Minnesota DHS (MHCP)</td><td>Attribution + accuracy disclaimer.</td></tr>
+<tr><td>MO</td><td>Missouri MMAC</td><td>Attribution + accuracy disclaimer.</td></tr>
+<tr><td>NC</td><td>North Carolina DHHS</td><td>State permission covers non-commercial copying (unaltered, cited); included under public-records sourcing.</td></tr>
+<tr><td>NJ</td><td>New Jersey Office of the State Comptroller</td><td>NJ.gov legal statement permits copying/distribution; records email-delivered by OSC.</td></tr>
+<tr><td>NY</td><td>New York OMIG</td><td>Required intended-use notice — see below. NY records are for Medicaid-payment-screening purposes only.</td></tr>
+<tr><td>OH</td><td>Ohio Department of Medicaid</td><td>Rely on current data — this feed refreshes daily; as-of dates in <code>FEED_INFO</code>.</td></tr>
+<tr><td>PA</td><td>Pennsylvania DHS (Medicheck)</td><td>Attribution + accuracy disclaimer; list publicly offered for download, updated daily.</td></tr>
+<tr><td>TN</td><td>Tennessee TennCare Office of Program Integrity</td><td>Attribution + accuracy disclaimer.</td></tr>
+<tr><td>TX</td><td>Texas HHSC-OIG</td><td>HHSC identified as source with web address and copy date (in <code>SOURCE_REGISTRY</code>/<code>FEED_INFO</code>); no-endorsement statement (above); modification labeling (above).</td></tr>
+<tr><td>WA</td><td>Washington Health Care Authority</td><td>Required caveat — see below.</td></tr>
+</table>
+</div>
+
+<h2>Required notice — New York OMIG records</h2>
+<div class="card notice"><p>"The OMIG List of Restricted and Excluded Providers exists as
+notification that a person is excluded from the Medicaid program and for the purpose of
+preventing Medicaid payments for care, services, or supplies, furnished, ordered, or
+prescribed by that person. Use of the list for other purposes is beyond the scope of its
+intended use."</p></div>
+
+<h2>Required caveat — Washington HCA records</h2>
+<div class="card notice"><p>"Not every action taken by the Department of Social and Health
+Services (DSHS) or the Health Care Authority (HCA) involves a finding of wrongdoing."
+Providers terminated without cause under WAC 182-502-0040 are not included on
+Washington's list.</p></div>
+
+<h2>Not included: Michigan</h2>
+<div class="card"><p>MDHHS data is withheld from this product pending written
+redistribution permission or public-records sourcing (michigan.gov terms restrict
+redistribution of site data).</p></div>
+
+<h2>Accuracy</h2>
+<p>Every source agency disclaims the accuracy of its published list. Verify any hit with
+the source agency before taking adverse action; records flagged
+<code>NEEDS_HUMAN_REVIEW = TRUE</code> in <code>EXCLUSIONS_SCREENABLE</code> must be
+human-verified.</p>
+
+<footer>
+RosterProof · <a href="/">Home</a> · <a href="dictionary.html">Data Dictionary</a> · <a href="privacy.html">Privacy Policy</a> · <a href="mailto:support@rosterproof.com">support@rosterproof.com</a>
+<br><span class="legal">© 2026 Shoonya — RosterProof is a Shoonya product</span>
+</footer>
+</div>
+</body>
+</html>
