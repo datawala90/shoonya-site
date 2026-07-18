@@ -1,11 +1,11 @@
 {
- "generated_at_utc": "2026-07-18T16:53:09Z",
- "last_refresh_utc": "2026-07-18 16:46:36",
+ "generated_at_utc": "2026-07-18T18:18:01Z",
+ "last_refresh_utc": "2026-07-18 18:06:38",
  "records_total": 328679,
  "sources_total": 25,
  "states": 23,
  "npi_resolved": {
-  "count": 53414,
+  "count": 53413,
   "rate_pct": 16.2
  },
  "multi_jurisdiction_npis": 6693,
