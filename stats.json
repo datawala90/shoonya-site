@@ -1,33 +1,33 @@
 {
- "generated_at_utc": "2026-07-18T12:05:24Z",
- "last_refresh_utc": "2026-07-18 11:58:20",
- "records_total": 159677,
- "sources_total": 23,
+ "generated_at_utc": "2026-07-18T13:27:00Z",
+ "last_refresh_utc": "2026-07-18 13:15:29",
+ "records_total": 327344,
+ "sources_total": 24,
  "states": 22,
  "npi_resolved": {
-  "count": 34778,
-  "rate_pct": 21.8
+  "count": 52839,
+  "rate_pct": 16.1
  },
- "multi_jurisdiction_npis": 6458,
+ "multi_jurisdiction_npis": 6543,
  "federal_gap_overall_pct": 53.1,
  "tiers": [
   {
    "tier": "T1",
    "label": "Source-published NPI, NPPES-verified",
    "description": "the excluding agency printed an NPI and the CMS NPPES registry confirms the identity",
-   "count": 20660
+   "count": 27592
   },
   {
    "tier": "T2",
    "label": "Unique identity match (name+state)",
    "description": "exactly one provider in the national registry shares the normalized name and state",
-   "count": 12185
+   "count": 22931
   },
   {
    "tier": "T2a",
    "label": "Unique identity match via registered alias",
    "description": "same, matched through a registered maiden/former/dba name",
-   "count": 371
+   "count": 662
   },
   {
    "tier": "T3",
