@@ -1,33 +1,33 @@
 {
- "generated_at_utc": "2026-07-17T12:14:59Z",
- "last_refresh_utc": "2026-07-17 10:31:07",
- "records_total": 150719,
- "sources_total": 16,
- "states": 15,
+ "generated_at_utc": "2026-07-18T12:05:24Z",
+ "last_refresh_utc": "2026-07-18 11:58:20",
+ "records_total": 159677,
+ "sources_total": 23,
+ "states": 22,
  "npi_resolved": {
-  "count": 33049,
-  "rate_pct": 21.9
+  "count": 34778,
+  "rate_pct": 21.8
  },
- "multi_jurisdiction_npis": 6032,
- "federal_gap_overall_pct": 52.5,
+ "multi_jurisdiction_npis": 6458,
+ "federal_gap_overall_pct": 53.1,
  "tiers": [
   {
    "tier": "T1",
    "label": "Source-published NPI, NPPES-verified",
    "description": "the excluding agency printed an NPI and the CMS NPPES registry confirms the identity",
-   "count": 19354
+   "count": 20660
   },
   {
    "tier": "T2",
    "label": "Unique identity match (name+state)",
    "description": "exactly one provider in the national registry shares the normalized name and state",
-   "count": 11923
+   "count": 12185
   },
   {
    "tier": "T2a",
    "label": "Unique identity match via registered alias",
    "description": "same, matched through a registered maiden/former/dba name",
-   "count": 364
+   "count": 371
   },
   {
    "tier": "T3",
@@ -64,6 +64,26 @@
    "gap_pct": 77.9
   },
   {
+   "state": "KY",
+   "active_records": 395,
+   "gap_pct": 77.2
+  },
+  {
+   "state": "CO",
+   "active_records": 317,
+   "gap_pct": 73.2
+  },
+  {
+   "state": "AR",
+   "active_records": 1983,
+   "gap_pct": 73.0
+  },
+  {
+   "state": "IN",
+   "active_records": 96,
+   "gap_pct": 70.8
+  },
+  {
    "state": "IL",
    "active_records": 3232,
    "gap_pct": 67.4
@@ -84,6 +104,11 @@
    "gap_pct": 64.3
   },
   {
+   "state": "MS",
+   "active_records": 198,
+   "gap_pct": 62.6
+  },
+  {
    "state": "CA",
    "active_records": 23166,
    "gap_pct": 59.6
@@ -95,22 +120,32 @@
   },
   {
    "state": "NY",
-   "active_records": 8922,
+   "active_records": 8920,
    "gap_pct": 49.4
   },
   {
+   "state": "LA",
+   "active_records": 5528,
+   "gap_pct": 49.2
+  },
+  {
    "state": "TX",
-   "active_records": 11887,
+   "active_records": 11890,
    "gap_pct": 48.9
   },
   {
    "state": "OH",
-   "active_records": 2010,
-   "gap_pct": 33.0
+   "active_records": 2028,
+   "gap_pct": 33.4
+  },
+  {
+   "state": "CT",
+   "active_records": 77,
+   "gap_pct": 28.6
   },
   {
    "state": "PA",
-   "active_records": 4887,
+   "active_records": 4888,
    "gap_pct": 20.9
   },
   {

@@ -56,9 +56,11 @@ so exclusion screening becomes a simple join in your own warehouse — no scrape
 no PDFs to retype, no blind spots between the federal list and the states.</p>
 
 <div class="stats">
-<div class="stat"><div class="big" id="st-records">150K+</div><div class="small">exclusion records, history-tracked</div></div>
-<div class="stat"><div class="big" id="st-states">Federal + 15 states</div><div class="small">OIG LEIE plus state Medicaid exclusion lists</div></div>
-<div class="stat"><div class="big" id="st-gap">~52%</div><div class="small">of state exclusions never reach the federal LEIE</div></div>
+<div class="stat"><div class="big" id="st-records">159K+</div><div class="small">exclusion records, history-tracked</div></div>
+<div class="stat"><div class="big" id="st-states">Federal + 22 states</div><div class="small">OIG LEIE plus state Medicaid exclusion lists</div></div>
+<div class="stat"><div class="big" id="st-gap">~53%</div><div class="small">of state exclusions never reach the federal LEIE</div></div>
+<div class="stat"><div class="big" id="st-npi">34K+</div><div class="small">records NPI-resolved — screen claims by NPI, not name-matching</div></div>
+<div class="stat"><div class="big" id="st-multi">6K+</div><div class="small">providers excluded in 2+ jurisdictions</div></div>
 <div class="stat"><div class="big">Daily</div><div class="small">automated refresh with full change feed</div></div>
 </div>
 
@@ -94,6 +96,8 @@ fetch('stats.json').then(r => r.json()).then(d => {
   document.getElementById('st-records').textContent = fmt(d.records_total);
   document.getElementById('st-states').textContent = 'Federal + ' + d.states + ' states';
   document.getElementById('st-gap').textContent = '~' + Math.round(d.federal_gap_overall_pct) + '%';
+  document.getElementById('st-npi').textContent = fmt(d.npi_resolved.count);
+  document.getElementById('st-multi').textContent = fmt(d.multi_jurisdiction_npis);
   document.getElementById('st-asof').textContent = ' · as of ' + d.last_refresh_utc.slice(0, 10) + ' UTC';
   const chart = document.getElementById('gapchart');
   d.state_gaps.forEach(g => {
