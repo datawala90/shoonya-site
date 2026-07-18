@@ -38,10 +38,18 @@ a{color:#7fd4c8}
 ul{color:#c7d2ea;line-height:1.7}
 footer{color:#5b6b85;font-size:13px;margin-top:56px}
 .legal{font-size:11px;color:#46536b}
+.sitehdr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 36px}
+.sitehdr .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.sitehdr .brand img{display:block;border-radius:6px}
+.sitehdr .brand span{color:#eef2fb;letter-spacing:3px;font-weight:600;font-size:14px}
+.sitehdr nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
+.sitehdr nav a{color:#8fa3c7;font-size:13px;text-decoration:none}
+.sitehdr nav a:hover{color:#7fd4c8}
 </style>
 </head>
 <body>
 <div class="wrap">
+<header class="sitehdr"><a class="brand" href="/"><img src="/icon-512.png" width="26" height="26" alt="RosterProof"><span>rosterproof</span></a><nav><a href="/">Home</a><a href="/#get-the-data">Get the data</a><a href="/attribution.html">Attribution</a></nav></header>
 <h1>Data Dictionary</h1>
 <div class="tag">rosterproof · published surface (PUBLISHED_V1)</div>
 
@@ -83,6 +91,39 @@ dates as published by the source.</p></div>
 <tr><td>IS_CURRENT</td><td>BOOLEAN</td><td>Convenience flag for the open version.</td></tr>
 <tr><td>RECORD</td><td>VARIANT</td><td>Full JSON snapshot of the record at this version.</td></tr>
 </table></div>
+
+<p><strong>The SCD2 guarantee, in plain English:</strong> version rows are immutable once written,
+with one exception — when a newer version arrives, the prior version's <code>VALID_TO</code> is
+filled to close its window. Content fields are never modified. Any past date therefore maps to
+exactly one version, gap-free: <code>WHERE :your_date &gt;= VALID_FROM AND (:your_date &lt;
+VALID_TO OR VALID_TO IS NULL)</code> always returns exactly one row per key.</p>
+
+<h3>How the tables relate — a worked example</h3>
+<p>Dr. Patel is excluded by Texas effective <strong>Jan 1 2026</strong>; Texas later publishes a
+reinstatement dated <strong>Mar 1 2026</strong>. The pipeline observes the record on Jan 2 and the
+reinstatement on Mar 2.</p>
+
+<p><em>Moment 1 — during February (excluded, no end in sight):</em></p>
+<div class="tablewrap"><table>
+<tr><th>Object</th><th>What you see</th><th>How it got there</th></tr>
+<tr><td>EXCLUSION_CURRENT</td><td>1 row, <code>REINSTATEMENT_DATE</code> null</td><td><strong>inserted</strong> Jan 2</td></tr>
+<tr><td>EXCLUSION_HISTORY</td><td>v1 <code>ADDED</code>, window open (<code>VALID_TO</code> null, <code>IS_CURRENT</code> TRUE)</td><td><strong>inserted</strong> Jan 2</td></tr>
+<tr><td>CHANGE_FEED</td><td>1 row: <code>ADDED</code>, observed Jan 2</td><td><strong>appended</strong> Jan 2</td></tr>
+<tr><td>EXCLUSIONS_SCREENABLE</td><td><code>IS_ACTIVE</code> TRUE, <code>EXCLUSION_END</code> null</td><td>derived from EXCLUSION_CURRENT</td></tr>
+</table></div>
+
+<p><em>Moment 2 — after Mar 2 (reinstatement observed):</em></p>
+<div class="tablewrap"><table>
+<tr><th>Object</th><th>What you see</th><th>How it got there</th></tr>
+<tr><td>EXCLUSION_CURRENT</td><td>still 1 row, <code>REINSTATEMENT_DATE</code> = 2026-03-01</td><td><strong>updated</strong> in the Mar 2 rebuild</td></tr>
+<tr><td>EXCLUSION_HISTORY</td><td>v1: <code>VALID_TO</code> = Mar 2, <code>IS_CURRENT</code> FALSE — <em>content untouched</em>; v2 <code>REINSTATED</code>, window open</td><td>v1 <strong>window-closed</strong>; v2 <strong>inserted</strong></td></tr>
+<tr><td>CHANGE_FEED</td><td>2 rows: the Jan <code>ADDED</code> (untouched) + <code>REINSTATED</code> observed Mar 2</td><td><strong>appended</strong> Mar 2</td></tr>
+<tr><td>EXCLUSIONS_SCREENABLE</td><td><code>IS_ACTIVE</code> FALSE, <code>EXCLUSION_END</code> = 2026-03-01, basis <code>PUBLISHED_BY_SOURCE</code></td><td>derived — end date now published</td></tr>
+</table></div>
+
+<p>Ask "what did we believe on Feb 10?" and <code>EXCLUSION_HISTORY</code> answers with exactly
+one row: v1 (Feb 10 falls inside its Jan 2 → Mar 2 window) — Dr. Patel excluded, no end date.
+That is the historical-claims validation story: point-in-time truth for any date, forever.</p>
 
 <h2>CHANGE_FEED <small>— append-only delta stream (poll <code>WHERE OBSERVED_AT &gt; :last_run</code>)</small></h2>
 <div class="tablewrap"><table>
