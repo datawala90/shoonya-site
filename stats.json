@@ -1,28 +1,38 @@
 {
- "generated_at_utc": "2026-07-19T16:51:38Z",
- "last_refresh_utc": "2026-07-19 16:43:19",
- "records_total": 334202,
- "sources_total": 33,
- "states": 30,
+ "generated_at_utc": "2026-07-19T17:33:43Z",
+ "last_refresh_utc": "2026-07-19 17:27:34",
+ "records_total": 334900,
+ "sources_total": 36,
+ "states": 33,
  "includes_dc": true,
+ "source_formats": {
+  "XLSX": 20,
+  "CSV": 6,
+  "JSON": 3,
+  "PDF": 3,
+  "HTML_TABLE": 2,
+  "TSV": 1,
+  "XLS": 1
+ },
+ "email_delivered_sources": 1,
  "npi_resolved": {
-  "count": 53461,
+  "count": 53516,
   "rate_pct": 16.0
  },
- "multi_jurisdiction_npis": 6861,
- "federal_gap_overall_pct": 53.1,
+ "multi_jurisdiction_npis": 6879,
+ "federal_gap_overall_pct": 53.0,
  "tiers": [
   {
    "tier": "T1",
    "label": "Source-published NPI, NPPES-verified",
    "description": "the excluding agency printed an NPI and the CMS NPPES registry confirms the identity",
-   "count": 29010
+   "count": 29055
   },
   {
    "tier": "T2",
    "label": "Unique identity match (name+state)",
    "description": "exactly one provider in the national registry shares the normalized name and state",
-   "count": 22989
+   "count": 22998
   },
   {
    "tier": "T2a",
@@ -34,7 +44,7 @@
    "tier": "T3",
    "label": "License-number corroborated",
    "description": "the state license number on the exclusion agrees with the registry",
-   "count": 525
+   "count": 526
   },
   {
    "tier": "T4",
@@ -125,6 +135,11 @@
    "gap_pct": 65.7
   },
   {
+   "state": "AK",
+   "active_records": 291,
+   "gap_pct": 65.3
+  },
+  {
    "state": "MD",
    "active_records": 1608,
    "gap_pct": 64.3
@@ -143,6 +158,11 @@
    "state": "NJ",
    "active_records": 3638,
    "gap_pct": 58.4
+  },
+  {
+   "state": "ND",
+   "active_records": 194,
+   "gap_pct": 53.1
   },
   {
    "state": "NY",
@@ -198,6 +218,11 @@
    "state": "GA",
    "active_records": 1370,
    "gap_pct": 14.1
+  },
+  {
+   "state": "HI",
+   "active_records": 198,
+   "gap_pct": 9.1
   }
  ]
 }

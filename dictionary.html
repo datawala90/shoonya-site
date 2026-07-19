@@ -139,7 +139,8 @@ That is the historical-claims validation story: point-in-time truth for any date
 <div class="tablewrap"><table>
 <tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
 <tr><td>SOURCE_ID / SOURCE_NAME / JURISDICTION</td><td></td><td>Identity of the list (<code>FEDERAL</code> or state code).</td></tr>
-<tr><td>PUBLISHER / SOURCE_URL / SOURCE_FORMAT / UPDATE_CADENCE</td><td></td><td>Where the data comes from and how often it updates. <code>EMAIL_REQUEST</code> = the source delivers the file by email on request rather than publishing a fetchable URL (e.g. NJ OSC); refreshed each time a new file arrives.</td></tr>
+<tr><td>PUBLISHER / SOURCE_URL / UPDATE_CADENCE</td><td></td><td>Where the data comes from and how often it updates. <code>EMAIL_REQUEST</code> = the source delivers the file by email on request rather than publishing a fetchable URL (e.g. NJ OSC); refreshed each time a new file arrives.</td></tr>
+<tr><td>SOURCE_FORMAT</td><td>VARCHAR</td><td>What the source actually publishes — <code>CSV</code>, <code>TSV</code>, <code>XLSX</code>/<code>XLS</code> (Excel), <code>PDF</code> (extracted through a reconciliation-gated pipeline: independent double-extraction, per-page count checks, verbatim spot-checks against the PDF text layer), <code>JSON</code> (portal API endpoints), or <code>HTML_TABLE</code> (scraped portal pages). Whatever the format, every record lands in the same canonical schema — your screening query never depends on how a state chose to publish.</td></tr>
 <tr><td>LAST_CHECKED_AT / LAST_CHANGED_AT</td><td>TIMESTAMP_NTZ (UTC)</td><td>Last fetch vs last time content actually changed.</td></tr>
 <tr><td>ACTIVE_RECORD_COUNT</td><td>NUMBER</td><td>Rows currently in <code>EXCLUSION_CURRENT</code> for this source.</td></tr>
 </table></div>

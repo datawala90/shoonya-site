@@ -32,6 +32,11 @@ h1{font-size:44px;letter-spacing:8px;font-weight:500;margin:0 0 10px}
 .card p{color:#b8c4de;line-height:1.7;margin:0}
 .badge{display:inline-block;background:#16233f;color:#7fd4c8;border:1px solid #1f3b5c;font-size:12px;letter-spacing:1px;padding:4px 12px;border-radius:999px;margin-bottom:14px}
 a{color:#7fd4c8}
+.fmtcard{background:#111a36;border:1px solid #2f3b55;border-radius:14px;padding:22px 32px;margin-top:24px;text-align:left}
+.fmtcard h3{font-size:17px;margin:0 0 10px;color:#e8ecf4}
+.fmtchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.fmtchip{background:#16233f;color:#7fd4c8;border:1px solid #1f3b5c;font-size:12.5px;letter-spacing:.4px;padding:4px 12px;border-radius:999px}
+.fmtnote{color:#8fa3c7;font-size:13px;line-height:1.6;margin:0}
 h2.sec{font-size:22px;margin:56px 0 6px;text-align:left}
 .secnote{color:#8fa3c7;font-size:13px;text-align:left;margin:0 0 18px}
 .gapchart{display:flex;flex-direction:column;gap:2px;text-align:left}
@@ -82,7 +87,7 @@ no PDFs to retype, no blind spots between the federal list and the states.</p>
 
 <div class="stats">
 <div class="stat"><div class="big" id="st-records">334K+</div><div class="small">exclusion records, history-tracked</div></div>
-<div class="stat"><div class="big" id="st-states">Federal + 30 states + DC</div><div class="small">OIG LEIE + SAM.gov plus state Medicaid exclusion lists</div></div>
+<div class="stat"><div class="big" id="st-states">Federal + 33 states + DC</div><div class="small">OIG LEIE + SAM.gov plus state Medicaid exclusion lists</div></div>
 <div class="stat"><div class="big" id="st-gap">~53%</div><div class="small">of state exclusions never reach the federal LEIE</div></div>
 <div class="stat"><div class="big" id="st-npi">53K+</div><div class="small">NPPES-verified NPI matches — screen claims by NPI, not name-matching</div></div>
 <div class="stat"><div class="big" id="st-multi">6.8K+</div><div class="small">providers excluded in 2+ jurisdictions — under ACA §6501, one state's exclusion is every state's problem</div></div>
@@ -100,6 +105,14 @@ other state. RosterProof closes that gap for providers <em>and</em> vendors — 
 companies, DME suppliers, staffing agencies appear on these lists as entities — with every
 record carrying its source, jurisdiction, exclusion window, and an NPI match with stated
 confidence, so a compliance analyst can defend every hit without asking anyone.</p>
+</div>
+
+<div class="fmtcard" id="formats">
+<h3>Every format states publish. One schema you query.</h3>
+<div class="fmtchips" id="fmt-chips">
+<span class="fmtchip">CSV</span><span class="fmtchip">Excel</span><span class="fmtchip">PDF</span><span class="fmtchip">JSON endpoints</span><span class="fmtchip">JavaScript portals</span><span class="fmtchip">Email-delivered files</span>
+</div>
+<p class="fmtnote">We normalize all of it into a single canonical schema, so your screening query never cares how a state chose to publish.</p>
 </div>
 
 <div class="card" id="get-the-data" style="text-align:center">
@@ -137,6 +150,18 @@ fetch('stats.json').then(r => r.json()).then(d => {
   document.getElementById('st-gap').textContent = '~' + Math.round(d.federal_gap_overall_pct) + '%';
   document.getElementById('st-npi').textContent = fmt(d.npi_resolved.count);
   document.getElementById('st-multi').textContent = fmt(d.multi_jurisdiction_npis);
+  if (d.source_formats) {
+    const label = {CSV:'CSV', TSV:'CSV', XLSX:'Excel', XLS:'Excel', PDF:'PDF',
+                   JSON:'JSON endpoints', HTML_TABLE:'JavaScript portals'};
+    const seen = [];
+    Object.keys(d.source_formats).forEach(f => {
+      const l = label[f] || f;
+      if (!seen.includes(l)) seen.push(l);
+    });
+    if (d.email_delivered_sources > 0) seen.push('Email-delivered files');
+    document.getElementById('fmt-chips').innerHTML =
+      seen.map(l => '<span class="fmtchip">' + l + '</span>').join('');
+  }
   document.getElementById('st-asof').textContent = ' · as of ' + d.last_refresh_utc.slice(0, 10) + ' UTC';
   const chart = document.getElementById('gapchart');
   d.state_gaps.forEach(g => {
