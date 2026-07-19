@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Federal Exclusion Gap by State — Exclusions Not on the LEIE</title>
+<link rel="canonical" href="https://rosterproof.com/federal-gap.html">
+<meta name="description" content="How much of each state's Medicaid exclusion list never reaches the federal LEIE — measured per state, updated daily. Map, table, and plain-English methodology.">
+<meta property="og:title" content="The federal gap, measured — state exclusions missing from the LEIE">
+<meta property="og:description" content="About half of active state Medicaid exclusions never appear on the federal LEIE. Per-state numbers, measured daily against the published dataset.">
+<meta property="og:image" content="https://rosterproof.com/assets/social/gap-map-1200x627.png">
+<meta property="og:url" content="https://rosterproof.com/federal-gap.html">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rosterproof.com/assets/social/gap-map-1200x627.png">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<style>
+body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;background:#0a1128;color:#eef2fb;margin:0}
+.wrap{max-width:960px;margin:0 auto;padding:56px 24px}
+h1{font-size:28px;font-weight:600;margin:0 0 6px}
+h2{font-size:20px;margin:44px 0 6px;color:#7fd4c8}
+.tag{color:#8fa3c7;font-size:13px;letter-spacing:2px;margin-bottom:28px;text-transform:uppercase}
+p{color:#c7d2ea;line-height:1.7}
+.card{background:#111a36;border:1px solid #2f3b55;border-left:3px solid #7fd4c8;border-radius:14px;padding:18px 24px;margin:18px 0}
+.card p{margin:0}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+th,td{border:1px solid #2f3b55;padding:9px 12px;text-align:left;vertical-align:top;line-height:1.55}
+th{background:#111a36;color:#8fa3c7;font-weight:600}
+td:first-child{white-space:nowrap}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;color:#7fd4c8}
+a{color:#7fd4c8}
+ul{color:#c7d2ea;line-height:1.7}
+footer{color:#5b6b85;font-size:13px;margin-top:56px}
+.legal{font-size:11px;color:#46536b}
+.sitehdr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 36px}
+.sitehdr .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.sitehdr .brand img{display:block;border-radius:6px}
+.sitehdr .brand span{color:#eef2fb;letter-spacing:3px;font-weight:600;font-size:14px}
+.sitehdr nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
+.sitehdr nav a{color:#8fa3c7;font-size:13px;text-decoration:none}
+.sitehdr nav a:hover{color:#7fd4c8}
+.mapcard{background:#111a36;border:1px solid #2f3b55;border-radius:14px;padding:18px 18px 8px;margin-top:18px;position:relative}
+.mapcard svg{width:100%;height:auto;display:block}
+.gm-state{stroke:#0a1128;stroke-width:.75;cursor:pointer}
+.gm-label{font-size:11px;font-variant-numeric:tabular-nums;pointer-events:none;transition:opacity .15s ease-out}
+.gm-leader{stroke:#3d4a6b;stroke-width:1;fill:none}
+.gm-legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:10px 6px 8px;color:#8fa3c7;font-size:12px}
+.gm-legend .sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+#map-tip{position:absolute;display:none;background:#0d1530;border:1px solid #2f3b55;border-radius:8px;
+  padding:8px 12px;font-size:12.5px;color:#c7d2ea;pointer-events:none;z-index:5;max-width:230px;text-align:left}
+#map-tip b{color:#e8ecf4}
+td.num{font-variant-numeric:tabular-nums;text-align:right}
+.updated{color:#8fa3c7;font-size:13px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The federal gap, measured: how much of each state's exclusion list never reaches the LEIE",
+  "author": {"@type": "Organization", "name": "Shoonya"},
+  "publisher": {"@type": "Organization", "name": "Shoonya", "logo": {"@type": "ImageObject", "url": "https://rosterproof.com/icon-512.png"}},
+  "image": "https://rosterproof.com/assets/social/gap-map-1200x627.png",
+  "mainEntityOfPage": "https://rosterproof.com/federal-gap.html"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+<header class="sitehdr"><a class="brand" href="/"><img src="/icon-512.png" width="26" height="26" alt="RosterProof"><span>rosterproof</span></a><nav><a href="/">Home</a><a href="/#get-the-data">Get the data</a><a href="/dictionary.html">Dictionary</a><a href="/attribution.html">Attribution</a></nav></header>
+<main>
+<h1>The federal gap, measured: how much of each state's exclusion list never reaches the LEIE</h1>
+<div class="tag">state exclusions not on the federal list · updated daily<span id="asof"></span></div>
+
+<p>Federal regulation requires screening against the federal databases — the OIG LEIE and SAM.gov —
+every month (42 CFR 455.436). But states exclude providers for reasons that never propagate to
+the federal lists: license actions, state program-integrity findings, Medicaid fraud-unit
+referrals, terminations for cause. Measured across every state list we ingest,
+<strong>about half of active state exclusions do not appear on the federal LEIE</strong> —
+and in some states the share exceeds 90%. Under ACA §6501, an exclusion or for-cause
+termination in one state's Medicaid program is grounds for termination in every other state,
+so each row below is exposure a federal-only screen never sees.</p>
+
+<div class="card"><p><strong>The number that matters:</strong> a compliance program screening
+only the LEIE misses <span id="hero-gap">~53%</span> of active state-level exclusion records —
+<span id="hero-count">tens of thousands</span> of provider exclusions invisible to federal-only
+screening. Every figure on this page recomputes from the live dataset each day.</p></div>
+
+<h2>The map</h2>
+<div class="mapcard">
+<svg id="gapmap" viewBox="0 0 1085 620" role="img" aria-label="US choropleth map showing the percentage of each state's active exclusions that do not appear on the federal LEIE"></svg>
+<div class="gm-legend" id="gm-legend"></div>
+<div id="map-tip"></div>
+<noscript><p class="updated">Enable JavaScript for the interactive map — the full table below works without it once rendered.</p></noscript>
+</div>
+
+<h2>Every state, ranked</h2>
+<p class="updated">Share of each state's active exclusions absent from the federal LEIE, largest gap first.</p>
+<div class="tablewrap">
+<table id="gap-table" aria-label="Per-state federal exclusion gap">
+<thead><tr><th>State</th><th class="num">Active exclusions</th><th class="num">Not on the LEIE</th><th class="num">Gap</th><th>Source format</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+
+<h2>How we measure it</h2>
+<p>Plain-English methodology, no tricks:</p>
+<ul>
+<li><strong>What's being compared.</strong> Every currently-active exclusion record from each
+state's own published list, against the current federal OIG LEIE — both sides from the same
+daily-refreshed dataset, loaded from the agencies' own publications.</li>
+<li><strong>How a match is decided.</strong> A state record counts as "on the LEIE" when it
+resolves to the same provider on the federal list — NPI-verified matches first (validated
+against the CMS NPPES registry), then exact-identity matching. Ambiguous records are
+counted conservatively.</li>
+<li><strong>What the gap is.</strong> The percentage of a state's active exclusion records
+with no corresponding federal LEIE record. It is a measure of <em>visibility</em>, not of
+wrongdoing: states exclude for state-law reasons the federal process may never adopt.</li>
+<li><strong>What it is not.</strong> Not a criticism of any agency — states publish exactly
+what their mandate requires. The gap exists because the two systems have different scopes;
+compliance teams simply need to see both.</li>
+<li><strong>Freshness.</strong> Sources are re-fetched and the gap recomputed daily; the
+as-of timestamp above comes from the dataset itself.</li>
+</ul>
+
+<p>Screen against the whole picture in one query:
+<a href="/#get-the-data">get the dataset on the Snowflake Marketplace (free)</a> — or read
+<a href="/dictionary.html">the data dictionary</a> and
+<a href="/attribution.html">per-source attribution</a>.</p>
+</main>
+
+<footer>
+RosterProof · <a href="/">Home</a> · <a href="/dictionary.html">Data Dictionary</a> · <a href="/attribution.html">Attribution</a> · <a href="/terms.html">Terms of Use</a> · <a href="/privacy.html">Privacy Policy</a> · <a href="mailto:support@rosterproof.com">support@rosterproof.com</a>
+<br><img src="/shoonya-logo.png" alt="Shoonya logo" width="40" height="40" loading="lazy" style="margin-top:14px;opacity:.75;max-width:100%"><br><span class="legal">© 2026 Shoonya — RosterProof is a Shoonya product</span>
+</footer>
+</div>
+
+<script>
+// table + hero render immediately from stats.json (no map runtime needed)
+fetch('/stats.json').then(r => r.json()).then(d => {
+  const FMT = {CSV:'CSV',TSV:'CSV',XLSX:'Excel',XLS:'Excel',PDF:'PDF',JSON:'JSON endpoint',HTML_TABLE:'Portal'};
+  const NAMES = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'District of Columbia',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
+  const fmtN = n => n.toLocaleString('en-US');
+  document.getElementById('asof').textContent = ' · as of ' + d.last_refresh_utc.slice(0, 10) + ' UTC';
+  document.getElementById('hero-gap').textContent = '~' + Math.round(d.federal_gap_overall_pct) + '%';
+  const totalMissing = d.state_gaps.reduce((a, g) => a + Math.round(g.active_records * g.gap_pct / 100), 0);
+  document.getElementById('hero-count').textContent = fmtN(totalMissing);
+  const tb = document.querySelector('#gap-table tbody');
+  d.state_gaps.forEach(g => {
+    const tr = document.createElement('tr');
+    const missing = Math.round(g.active_records * g.gap_pct / 100);
+    tr.innerHTML = `<td>${NAMES[g.state] || g.state}</td><td class="num">${fmtN(g.active_records)}</td>` +
+      `<td class="num">${fmtN(missing)}</td><td class="num">${g.gap_pct.toFixed(1)}%</td>` +
+      `<td>${FMT[g.source_format] || g.source_format || '—'}</td>`;
+    tb.appendChild(tr);
+  });
+});
+</script>
+<script src="/assets/site-map.js" defer></script>
+</body>
+</html>
