@@ -32,6 +32,17 @@ h1{font-size:44px;letter-spacing:8px;font-weight:500;margin:0 0 10px}
 .card p{color:#b8c4de;line-height:1.7;margin:0}
 .badge{display:inline-block;background:#16233f;color:#7fd4c8;border:1px solid #1f3b5c;font-size:12px;letter-spacing:1px;padding:4px 12px;border-radius:999px;margin-bottom:14px}
 a{color:#7fd4c8}
+.mapcard{background:#111a36;border:1px solid #2f3b55;border-radius:14px;padding:18px 18px 8px;margin-top:18px;position:relative}
+.mapcard svg{width:100%;height:auto;display:block}
+.gm-state{stroke:#0a1128;stroke-width:.75;cursor:pointer;transition:filter .15s ease-out}
+.gm-label{font-size:11px;font-variant-numeric:tabular-nums;pointer-events:none;transition:opacity .15s ease-out}
+.gm-leader{stroke:#3d4a6b;stroke-width:1;fill:none}
+.gm-legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:10px 6px 8px;color:#8fa3c7;font-size:12px}
+.gm-legend .sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+#map-tip{position:absolute;display:none;background:#0d1530;border:1px solid #2f3b55;border-radius:8px;
+  padding:8px 12px;font-size:12.5px;color:#c7d2ea;pointer-events:none;z-index:5;max-width:230px;text-align:left}
+#map-tip b{color:#e8ecf4}
+#map-tip .fmtchip{font-size:10.5px;padding:2px 8px;margin-top:4px;display:inline-block}
 .fmtcard{background:#111a36;border:1px solid #2f3b55;border-radius:14px;padding:22px 32px;margin-top:24px;text-align:left}
 .fmtcard h3{font-size:17px;margin:0 0 10px;color:#e8ecf4}
 .fmtchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
@@ -125,11 +136,21 @@ query the <code>PUBLISHED_V1</code> views in minutes. Free, no forms.</p>
 <p class="muted-line">Not on Snowflake? <a href="mailto:support@rosterproof.com">support@rosterproof.com</a> — we’ll set you up with other access options.</p>
 </div>
 
-<h2 class="sec">The federal gap, state by state</h2>
+<h2 class="sec">The federal gap, on the map</h2>
 <p class="secnote">Share of each state's active exclusions that never appear on the federal LEIE.
-Live from the published dataset — refreshed daily<span id="st-asof"></span>.</p>
+Live from the published dataset — refreshed daily<span id="st-asof"></span>. Hover or tap a state.</p>
+<div class="mapcard">
+<svg id="gapmap" viewBox="0 0 1085 620" role="img" aria-label="US map of per-state federal exclusion gap"></svg>
+<div class="gm-legend" id="gm-legend"></div>
+<div id="map-tip"></div>
+<noscript><p class="secnote">Enable JavaScript for the interactive map.</p></noscript>
+</div>
+
+<h2 class="sec">Top ten: the biggest federal blind spots</h2>
+<p class="secnote">The ten states where the largest share of active exclusions is missing from the
+federal LEIE — the compliance exposure a federal-only screen never sees.</p>
 <div class="gapchart" id="gapchart">
-<noscript><p class="secnote">Enable JavaScript for the live per-state chart, or see the dataset's FEED_INFO.</p></noscript>
+<noscript><p class="secnote">Enable JavaScript for the live chart, or see the dataset's FEED_INFO.</p></noscript>
 </div>
 
 <h2 class="sec">How matching works: four tiers, strongest first</h2>
@@ -164,7 +185,7 @@ fetch('stats.json').then(r => r.json()).then(d => {
   }
   document.getElementById('st-asof').textContent = ' · as of ' + d.last_refresh_utc.slice(0, 10) + ' UTC';
   const chart = document.getElementById('gapchart');
-  d.state_gaps.forEach(g => {
+  d.state_gaps.slice(0, 10).forEach(g => {
     const row = document.createElement('div');
     row.className = 'gaprow';
     row.setAttribute('data-tip', g.state + ': ' + fmt(g.active_records) + ' active exclusions, ' + g.gap_pct + '% not on the federal LEIE');
@@ -195,5 +216,161 @@ RosterProof · <a href="attribution.html">Attribution &amp; Notices</a> · <a hr
 <br><img src="/shoonya-logo.png" alt="Shoonya" width="40" height="40" style="margin-top:14px;opacity:.75;max-width:100%"><br><span class="legal">© 2026 Shoonya — RosterProof is a Shoonya product</span>
 </footer>
 </div>
+<script src="/assets/vendor/d3.v7.min.js"></script>
+<script src="/assets/vendor/topojson-client.min.js"></script>
+<script>
+(function () {
+  const FIPS = {'01':'AL','02':'AK','04':'AZ','05':'AR','06':'CA','08':'CO','09':'CT','10':'DE',
+    '11':'DC','12':'FL','13':'GA','15':'HI','16':'ID','17':'IL','18':'IN','19':'IA','20':'KS',
+    '21':'KY','22':'LA','23':'ME','24':'MD','25':'MA','26':'MI','27':'MN','28':'MS','29':'MO',
+    '30':'MT','31':'NE','32':'NV','33':'NH','34':'NJ','35':'NM','36':'NY','37':'NC','38':'ND',
+    '39':'OH','40':'OK','41':'OR','42':'PA','44':'RI','45':'SC','46':'SD','47':'TN','48':'TX',
+    '49':'UT','50':'VT','51':'VA','53':'WA','54':'WV','55':'WI','56':'WY'};
+  const NAMES = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',
+    CT:'Connecticut',DE:'Delaware',DC:'District of Columbia',FL:'Florida',GA:'Georgia',HI:'Hawaii',
+    ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',
+    ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',
+    MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',
+    NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',
+    OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',
+    TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',
+    WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
+  const FMT = {CSV:'CSV',TSV:'CSV',XLSX:'Excel',XLS:'Excel',PDF:'PDF',JSON:'JSON endpoint',HTML_TABLE:'Portal'};
+  const RAMP = ['#14384c','#1d5560','#2a7873','#46a58f','#7fd4c8'];
+  const BRIGHT = ['#1d5560','#2a7873','#46a58f','#7fd4c8','#a5e6dc'];  // one step up
+  const INK  = ['#eaf1fb','#eaf1fb','#eaf1fb','#0a1128','#0a1128'];
+  const GRAY = '#2a3350';
+  const SMALL = ['CT','NJ','DE','MD','DC','MA','RI','NH','VT'];   // leader-line cluster
+
+  const step = g => g >= 80 ? 4 : g >= 60 ? 3 : g >= 40 ? 2 : g >= 20 ? 1 : 0;
+  const isMobile = () => window.matchMedia('(max-width:640px)').matches;
+
+  Promise.all([
+    fetch('stats.json').then(r => r.json()),
+    fetch('/assets/vendor/states-albers-10m.json').then(r => r.json())
+  ]).then(([stats, topo]) => {
+    const gaps = {};
+    stats.state_gaps.forEach(g => gaps[g.state] = g);
+    const top10 = stats.state_gaps.slice(0, 10).map(g => g.state);
+
+    const svg = d3.select('#gapmap');
+    const path = d3.geoPath();
+    const states = topojson.feature(topo, topo.objects.states).features;
+    const gMap = svg.append('g');
+    const gLead = svg.append('g');
+    const gLab = svg.append('g');
+    const tip = document.getElementById('map-tip');
+    const card = document.querySelector('.mapcard');
+    let focused = null;
+
+    const meta = {};   // postal -> {d: gapdata|null, centroid, stepIdx, path, label}
+
+    states.forEach(f => {
+      const postal = FIPS[f.id];
+      if (!postal) return;
+      const g = gaps[postal] || null;
+      const idx = g ? step(g.gap_pct) : -1;
+      meta[postal] = { d: g, stepIdx: idx, centroid: path.centroid(f) };
+      meta[postal].path = gMap.append('path')
+        .attr('d', path(f))
+        .attr('class', 'gm-state')
+        .attr('fill', g ? RAMP[idx] : GRAY)
+        .on('mouseenter', () => { if (!isMobile()) focus(postal); })
+        .on('mouseleave', () => { if (!isMobile()) blur(); })
+        .on('click', ev => { ev.stopPropagation();
+          if (focused === postal) blur(); else focus(postal); });
+    });
+
+    // resting labels: loaded, non-small states (mobile: top-10 only)
+    const smallLoaded = SMALL.filter(p => meta[p] && meta[p].d);
+    Object.keys(meta).forEach(postal => {
+      const m = meta[postal];
+      if (!m.d || SMALL.includes(postal)) return;
+      if (isMobile() && !top10.includes(postal)) return;
+      m.label = gLab.append('text')
+        .attr('class', 'gm-label')
+        .attr('transform', `translate(${m.centroid[0]},${m.centroid[1]})`)
+        .attr('text-anchor', 'middle').attr('dy', '0.35em')
+        .attr('fill', INK[m.stepIdx])
+        .text(m.d.gap_pct.toFixed(1));
+    });
+
+    // small NE cluster: leader lines to a right-edge label column
+    smallLoaded.sort((a, b) => meta[a].centroid[1] - meta[b].centroid[1]);
+    smallLoaded.forEach((postal, i) => {
+      const m = meta[postal];
+      const lx = 1000, ly = 120 + i * 30;
+      if (!isMobile()) {
+        gLead.append('polyline').attr('class', 'gm-leader')
+          .attr('points', `${m.centroid[0]},${m.centroid[1]} ${lx - 8},${ly}`);
+      }
+      m.labelXY = [lx, ly];
+      m.label = gLab.append('text')
+        .attr('class', 'gm-label')
+        .attr('transform', `translate(${lx},${ly})`)
+        .attr('text-anchor', 'start').attr('dy', '0.35em')
+        .attr('fill', '#c7d2ea')
+        .style('display', isMobile() ? 'none' : null)
+        .text(`${postal} ${m.d.gap_pct.toFixed(1)}`)
+        .style('cursor', 'pointer')
+        .style('pointer-events', 'all')
+        .on('mouseenter', () => { if (!isMobile()) focus(postal); })
+        .on('mouseleave', () => { if (!isMobile()) blur(); });
+    });
+
+    function focus(postal) {
+      const m = meta[postal];
+      if (!m || !m.d) { blur(); return; }
+      blur(false);
+      focused = postal;
+      m.path.attr('fill', BRIGHT[m.stepIdx])
+            .attr('stroke', '#cfeee8').attr('stroke-width', 1.5).raise();
+      gLab.selectAll('text').transition().duration(150).ease(d3.easeCubicOut)
+          .style('opacity', 0.4);
+      if (m.label) {
+        const [cx, cy] = m.labelXY || m.centroid;
+        m.label.raise().transition().duration(150).ease(d3.easeCubicOut)
+          .style('opacity', 1).style('font-weight', 700)
+          .attr('transform', `translate(${cx},${cy}) scale(2)`);
+      }
+      const fmt = FMT[m.d.source_format] || m.d.source_format || '';
+      tip.innerHTML = `<b>${NAMES[postal]}</b><br>${m.d.gap_pct.toFixed(1)}% not on the federal LEIE<br>` +
+        `${m.d.active_records.toLocaleString('en-US')} active exclusions` +
+        (fmt ? `<br><span class="fmtchip">${fmt}</span>` : '');
+      tip.style.display = 'block';
+      const r = card.getBoundingClientRect();
+      const pt = m.labelXY || m.centroid;
+      const sx = r.width / 1085;
+      tip.style.left = Math.min(pt[0] * sx + 24, r.width - 240) + 'px';
+      tip.style.top = Math.max(pt[1] * sx * (620 / 620) - 10, 8) + 'px';
+    }
+
+    function blur(hideTip = true) {
+      if (focused) {
+        const m = meta[focused];
+        m.path.attr('fill', RAMP[m.stepIdx]).attr('stroke', null).attr('stroke-width', null);
+        if (m.label) {
+          const [cx, cy] = m.labelXY || m.centroid;
+          m.label.transition().duration(150).ease(d3.easeCubicOut)
+            .style('font-weight', null)
+            .attr('transform', `translate(${cx},${cy}) scale(1)`);
+        }
+        focused = null;
+      }
+      gLab.selectAll('text').transition().duration(150).ease(d3.easeCubicOut).style('opacity', 1);
+      if (hideTip) tip.style.display = 'none';
+    }
+    document.addEventListener('click', () => { if (focused) blur(); });
+
+    // legend
+    const legend = document.getElementById('gm-legend');
+    const bands = ['under 20%', '20–40%', '40–60%', '60–80%', '80%+'];
+    legend.innerHTML = bands.map((b, i) =>
+      `<span><span class="sw" style="background:${RAMP[i]}"></span>${b}</span>`).join('') +
+      `<span><span class="sw" style="background:${GRAY}"></span>no state list published, or not yet loaded</span>` +
+      `<span style="margin-left:auto">gap % = share of that state's active exclusions absent from the federal LEIE</span>`;
+  }).catch(e => console.error('map failed', e));
+})();
+</script>
 </body>
 </html>
