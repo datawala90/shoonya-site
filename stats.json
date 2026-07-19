@@ -1,22 +1,22 @@
 {
- "generated_at_utc": "2026-07-19T15:45:15Z",
- "last_refresh_utc": "2026-07-19 15:14:20",
- "records_total": 332796,
- "sources_total": 32,
- "states": 29,
+ "generated_at_utc": "2026-07-19T16:51:38Z",
+ "last_refresh_utc": "2026-07-19 16:43:19",
+ "records_total": 334202,
+ "sources_total": 33,
+ "states": 30,
  "includes_dc": true,
  "npi_resolved": {
-  "count": 53218,
+  "count": 53461,
   "rate_pct": 16.0
  },
- "multi_jurisdiction_npis": 6841,
- "federal_gap_overall_pct": 52.5,
+ "multi_jurisdiction_npis": 6861,
+ "federal_gap_overall_pct": 53.1,
  "tiers": [
   {
    "tier": "T1",
    "label": "Source-published NPI, NPPES-verified",
    "description": "the excluding agency printed an NPI and the CMS NPPES registry confirms the identity",
-   "count": 28767
+   "count": 29010
   },
   {
    "tier": "T2",
@@ -53,6 +53,11 @@
    "state": "DC",
    "active_records": 37,
    "gap_pct": 97.3
+  },
+  {
+   "state": "NE",
+   "active_records": 1406,
+   "gap_pct": 86.7
   },
   {
    "state": "TN",
