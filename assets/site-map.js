@@ -37,7 +37,6 @@ loadGapMap(function () {
   const FMT = {CSV:'CSV',TSV:'CSV',XLSX:'Excel',XLS:'Excel',PDF:'PDF',JSON:'JSON endpoint',HTML_TABLE:'Portal'};
   const RAMP = ['#14384c','#1d5560','#2a7873','#46a58f','#7fd4c8'];
   const BRIGHT = ['#1d5560','#2a7873','#46a58f','#7fd4c8','#a5e6dc'];  // one step up
-  const INK = '#f2f7ff';   // one ink for all labels; the dark halo (CSS) carries contrast on every fill
   const GRAY = '#2a3350';
   const SMALL = ['CT','NJ','DE','MD','DC','MA','RI','NH','VT'];   // leader-line cluster
 
@@ -89,7 +88,6 @@ loadGapMap(function () {
         .attr('class', 'gm-label')
         .attr('transform', `translate(${m.centroid[0]},${m.centroid[1]})`)
         .attr('text-anchor', 'middle').attr('dy', '0.35em')
-        .attr('fill', INK)
         .text(m.d.gap_pct.toFixed(1));
     });
 
@@ -98,17 +96,13 @@ loadGapMap(function () {
     smallLoaded.forEach((postal, i) => {
       const m = meta[postal];
       const lx = 1000, ly = 120 + i * 30;
-      if (!isMobile()) {
-        gLead.append('polyline').attr('class', 'gm-leader')
-          .attr('points', `${m.centroid[0]},${m.centroid[1]} ${lx - 8},${ly}`);
-      }
+      gLead.append('polyline').attr('class', 'gm-leader')
+        .attr('points', `${m.centroid[0]},${m.centroid[1]} ${lx - 8},${ly}`);
       m.labelXY = [lx, ly];
       m.label = gLab.append('text')
-        .attr('class', 'gm-label')
+        .attr('class', 'gm-label gm-lead')
         .attr('transform', `translate(${lx},${ly})`)
         .attr('text-anchor', 'start').attr('dy', '0.35em')
-        .attr('fill', '#c7d2ea')
-        .style('display', isMobile() ? 'none' : null)
         .text(`${postal} ${m.d.gap_pct.toFixed(1)}`)
         .style('cursor', 'pointer')
         .style('pointer-events', 'all')
@@ -127,7 +121,8 @@ loadGapMap(function () {
           .style('opacity', 0.4);
       if (m.label) {
         const [cx, cy] = m.labelXY || m.centroid;
-        m.label.raise().transition().duration(150).ease(d3.easeCubicOut)
+        m.label.classed('gm-focus', true)
+          .raise().transition().duration(150).ease(d3.easeCubicOut)
           .style('opacity', 1).style('font-weight', 700)
           .attr('transform', `translate(${cx},${cy}) scale(2)`);
       }
@@ -149,7 +144,8 @@ loadGapMap(function () {
         m.path.attr('fill', RAMP[m.stepIdx]).attr('stroke', null).attr('stroke-width', null);
         if (m.label) {
           const [cx, cy] = m.labelXY || m.centroid;
-          m.label.transition().duration(150).ease(d3.easeCubicOut)
+          m.label.classed('gm-focus', false)
+            .transition().duration(150).ease(d3.easeCubicOut)
             .style('font-weight', null)
             .attr('transform', `translate(${cx},${cy}) scale(1)`);
         }
