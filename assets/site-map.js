@@ -37,7 +37,7 @@ loadGapMap(function () {
   const FMT = {CSV:'CSV',TSV:'CSV',XLSX:'Excel',XLS:'Excel',PDF:'PDF',JSON:'JSON endpoint',HTML_TABLE:'Portal'};
   const RAMP = ['#14384c','#1d5560','#2a7873','#46a58f','#7fd4c8'];
   const BRIGHT = ['#1d5560','#2a7873','#46a58f','#7fd4c8','#a5e6dc'];  // one step up
-  const INK  = ['#eaf1fb','#eaf1fb','#eaf1fb','#0a1128','#0a1128'];
+  const INK = '#f2f7ff';   // one ink for all labels; the dark halo (CSS) carries contrast on every fill
   const GRAY = '#2a3350';
   const SMALL = ['CT','NJ','DE','MD','DC','MA','RI','NH','VT'];   // leader-line cluster
 
@@ -90,7 +90,7 @@ loadGapMap(function () {
         .attr('class', 'gm-label')
         .attr('transform', `translate(${m.centroid[0]},${m.centroid[1]})`)
         .attr('text-anchor', 'middle').attr('dy', '0.35em')
-        .attr('fill', INK[m.stepIdx])
+        .attr('fill', INK)
         .text(m.d.gap_pct.toFixed(1));
     });
 
